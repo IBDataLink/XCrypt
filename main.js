@@ -11,7 +11,7 @@ const outputWindow = document.getElementById('output-window');
 
 // Configuration
 // Replace this with your actual webhook URL
-const WEBHOOK_URL = 'https://your-webhook-endpoint.com/api'; 
+const WEBHOOK_URL = 'https://dd54-95-56-11-27.ngrok-free.app/webhook-test/d0740166-ee1e-45e2-89d3-f242393f3916'; 
 
 // Setup Mini App
 function initApp() {
