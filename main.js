@@ -38,7 +38,7 @@ function initApp() {
     }
 
     // Set Bot Name (You can customize this)
-    botName.textContent = 'AI Assistant Bot';
+    botName.textContent = 'XCrypt';
 }
 
 // Handle request sending
