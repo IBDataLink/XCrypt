@@ -54,33 +54,40 @@ async function handleSendRequest() {
     outputWindow.classList.add('loading-neon');
 
     try {
-        // In a real scenario, you would send this to your server/webhook
-        // For demonstration, we'll simulate a fetch
-        
-        /* 
         const response = await fetch(WEBHOOK_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'cors', // Enable CORS
             body: JSON.stringify({ 
                 query: query,
-                user: tg.initDataUnsafe?.user 
+                user: tg.initDataUnsafe?.user,
+                initData: tg.initData
             })
         });
-        const data = await response.json();
-        outputWindow.textContent = data.reply || 'Запрос отправлен успешно';
-        */
 
-        // Simulated delay for demonstration
-        setTimeout(() => {
-            outputWindow.textContent = `Вы отправили: "${query}"\n\nЭто демонстрационный ответ. Пожалуйста, укажите реальный URL вебхука в main.js для интеграции с вашим бэкендом.`;
-            outputWindow.classList.remove('loading-neon');
-            webhookInput.disabled = false;
-            sendButton.disabled = false;
-            webhookInput.value = '';
-        }, 1500);
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Handle different response formats (string or object with reply field)
+        const reply = typeof data === 'string' ? data : (data.reply || data.message || JSON.stringify(data, null, 2));
+        
+        outputWindow.textContent = reply;
+        outputWindow.classList.remove('empty');
+        webhookInput.value = '';
 
     } catch (error) {
-        outputWindow.textContent = 'Ошибка при отправке запроса: ' + error.message;
+        let errorMsg = error.message;
+        if (WEBHOOK_URL.includes('your-webhook-endpoint.com')) {
+            errorMsg = 'Вы не указали реальный адрес вебхука в строке 14 файла main.js';
+        }
+        outputWindow.textContent = 'Ошибка: ' + errorMsg;
+    } finally {
         outputWindow.classList.remove('loading-neon');
         webhookInput.disabled = false;
         sendButton.disabled = false;
