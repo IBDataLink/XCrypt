@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────
 //  CONFIG
 // ─────────────────────────────────────────────
-const WEBHOOK_URL = 'https://ibdatalink.github.io/XCrypt/';
+const WEBHOOK_URL = 'https://dd54-95-56-11-27.ngrok-free.app/webhook-test/d0740166-ee1e-45e2-89d3-f242393f3916';
 
 // ─────────────────────────────────────────────
 //  TELEGRAM SDK INIT
