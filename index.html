@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Assistant</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3.0">
+</head>
+<body>
+
+    <!-- FIXED HEADER -->
+    <header class="app-header" id="app-header">
+        <div class="header-inner">
+            <div class="header-left">
+                <div class="avatar-wrapper">
+                    <img id="user-avatar" src="" alt="Avatar">
+                    <span class="online-dot"></span>
+                </div>
+                <div class="header-text">
+                    <h1 id="bot-name">AI Assistant</h1>
+                    <p id="welcome-text">Привет, <span id="user-name">...</span> 👋</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="cmd-menu-btn" id="cmd-menu-btn" title="Команды">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    Online
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- COMMANDS DROPDOWN -->
+    <div class="cmd-overlay" id="cmd-overlay"></div>
+    <div class="cmd-dropdown" id="cmd-dropdown">
+        <div class="cmd-dropdown-header">Команды</div>
+        <button class="cmd-item" data-cmd="/архивация">
+            <span class="cmd-icon">📦</span>
+            <span class="cmd-label">/архивация</span>
+        </button>
+        <button class="cmd-item" data-cmd="/разархивация">
+            <span class="cmd-icon">📂</span>
+            <span class="cmd-label">/разархивация</span>
+        </button>
+        <button class="cmd-item" data-cmd="/crypt">
+            <span class="cmd-icon">🔒</span>
+            <span class="cmd-label">/crypt</span>
+        </button>
+        <button class="cmd-item" data-cmd="/encrypt">
+            <span class="cmd-icon">🔓</span>
+            <span class="cmd-label">/encrypt</span>
+        </button>
+        <button class="cmd-item" data-cmd="/clear">
+            <span class="cmd-icon">🗑️</span>
+            <span class="cmd-label">/clear</span>
+        </button>
+        <button class="cmd-item" data-cmd="/insheet">
+            <span class="cmd-icon">📊</span>
+            <span class="cmd-label">/insheet</span>
+        </button>
+        <button class="cmd-item" data-cmd="/alldata">
+            <span class="cmd-icon">📋</span>
+            <span class="cmd-label">/alldata</span>
+        </button>
+    </div>
+
+    <!-- SCROLLABLE MAIN CONTENT -->
+    <main class="app-main" id="app-main">
+
+        <!-- Chat / Response Area -->
+        <section class="chat-area" id="chat-area">
+
+            <div class="empty-state" id="empty-state">
+                <div class="empty-icon">
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                        <circle cx="28" cy="28" r="28" fill="rgba(74,222,128,0.08)"/>
+                        <path d="M18 28l8 8 12-16" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <p class="empty-title">Готов к работе</p>
+                <p class="empty-sub">Напишите, запишите голос или прикрепите файл</p>
+            </div>
+
+            <!-- Messages will be injected here -->
+            <div id="messages-list"></div>
+
+        </section>
+    </main>
+
+    <!-- FIXED BOTTOM PANEL -->
+    <footer class="app-footer" id="app-footer">
+
+        <!-- Attachments Preview Bar -->
+        <div class="attachment-preview" id="attachment-preview" style="display:none;">
+            <div id="attachment-items" class="attachment-items"></div>
+        </div>
+
+        <!-- Input Bar -->
+        <div class="input-bar">
+
+            <!-- Attach File Button -->
+            <button class="icon-btn" id="attach-btn" title="Прикрепить файл">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M21.43 11.1L12.37 20.16a5.5 5.5 0 01-7.78-7.78l9.07-9.06a3.67 3.67 0 015.18 5.18L9.78 17.56a1.83 1.83 0 01-2.59-2.59L15.11 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <input type="file" id="file-input" multiple accept="*/*" style="display:none;">
+
+            <!-- Text Input -->
+            <div class="text-input-wrapper">
+                <textarea id="webhook-input" placeholder="Напишите сообщение..." rows="1"></textarea>
+            </div>
+
+            <!-- Audio Record Button -->
+            <button class="icon-btn audio-btn" id="record-btn" title="Запись голоса">
+                <svg id="mic-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="9" y="2" width="6" height="13" rx="3" stroke="currentColor" stroke-width="2"/>
+                    <path d="M5 10a7 7 0 0014 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="12" y1="19" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="9" y1="22" x2="15" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <svg id="stop-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;">
+                    <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>
+                </svg>
+            </button>
+
+            <!-- Send Button -->
+            <button class="send-btn" id="send-btn" title="Отправить">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Recording Indicator -->
+        <div class="recording-bar" id="recording-bar" style="display:none;">
+            <span class="rec-dot"></span>
+            <span class="rec-label">Идёт запись...</span>
+            <span class="rec-timer" id="rec-timer">0:00</span>
+            <button class="rec-cancel" id="rec-cancel">Отмена</button>
+        </div>
+    </footer>
+
+    <script src="main.js?v=3.0"></script>
+</body>
+</html>
